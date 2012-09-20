@@ -14,8 +14,13 @@ class CGameApplication
 	   void run();
 
 private:
+	    bool CGameApplication::initGame()
+		{
+			return true;
+		}
 	    bool initGraphics();
 		bool initWindow();
+
 
 		void render();
 		void update();
@@ -25,4 +30,6 @@ private:
 		IDXGISwapChain*m_pSwapChain;
 		ID3D10RenderTargetView*m_pRenderTargetView;
 		CWin32Window*m_pWindow;
+
+		ID3D10Buffer*m_pVertexBuffer;
 };
