@@ -90,6 +90,8 @@ bool CGameApplication::initGame()
 	bd.BindFlags = D3D10_BIND_VERTEX_BUFFER;
 	bd.CPUAccessFlags = 0;
 	bd.MiscFlags = 0;
+
+
 	
 	Vertex vertices[] =
 	{
@@ -97,6 +99,8 @@ bool CGameApplication::initGame()
 		D3DXVECTOR3(0.5f, -0.5f, 0.5f),
 		D3DXVECTOR3(-0.5f, -0.5f, 0.5f),
 	};
+
+	
 
 	D3D10_INPUT_ELEMENT_DESC layout[] = 
 	{
@@ -124,6 +128,13 @@ bool CGameApplication::initGame()
 	InitData.pSysMem = vertices;
 	if (FAILED(m_pD3D10Device->CreateBuffer(&bd, &InitData, &m_pVertexBuffer)))
 		return false;
+
+	D3D10_BUFFER_DESC indexBufferDesc;
+	indexBufferDesc.Usage = D3D10_USAGE_DEFAULT;
+	indexBufferDesc.ByteWidth = sizeof (int) * 3;
+	indexBufferDesc.BindFlags = D3D10_BIND_INDEX_BUFFER;
+	indexBufferDesc.CPUAccessFlags = 0;
+	indexBufferDesc.MiscFlags = 0;
 
 	UINT stride = sizeof (Vertex);
 	UINT offset = 0;
