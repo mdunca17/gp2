@@ -1,11 +1,9 @@
 //Are we on the windows platform?
-#ifdef WIN32
+//#ifdef WIN32// anything included between ifdef and endif will be included if win32 is 
 //if so include the header for windows applications
 #include <Windows.h>
 #include "GameApplication.h"
-#endif
 
-#include "Win32Window.h"
 
 //Check to see if we are on windows
 #ifdef WIN32
@@ -22,23 +20,25 @@ int main(int argc, char **argv)
 
 	if(!pApp->init())
 	{
-		if (pApp)
+		if(pApp)
 		{
 			delete pApp;
 			pApp=NULL;
 			return 1;
 		}
 	}
-
 	pApp->run();
-
 	if(pApp)
 	{
 		delete pApp;
 		pApp=NULL;
 	}
+
 	return 0;
 }
+
+
+
 
 
 
