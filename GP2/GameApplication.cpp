@@ -2,6 +2,8 @@
 struct Vertex
 {
 	D3DXVECTOR3 Pos;
+	D3DXCOLOR colour;
+
 };
 
 CGameApplication::CGameApplication(void)
@@ -104,10 +106,10 @@ bool CGameApplication::initGame()
 	
 	Vertex vertices[] =
 	{
-		D3DXVECTOR3(0.0f, 0.0f, 0.5f),
-		D3DXVECTOR3(0.0f, 0.5f, 0.5f),
-		D3DXVECTOR3(0.5f, 0.5f, 0.5f),
-		D3DXVECTOR3( 0.5f , 0.0f, 0.5f),
+		{D3DXVECTOR3(-0.5f, -0.5f, 0.5f),D3DXCOLOR(1.0f,0.0f,0.0f,0.0f)},
+		{D3DXVECTOR3(-0.5f, 1.0f, 0.5f),D3DXCOLOR(0.0f,0.0f,1.0f,0.0f)},
+		{D3DXVECTOR3(1.0f, 1.0f, 0.5f),D3DXCOLOR(0.0f,1.0f,0.0f,0.0f)},
+		{D3DXVECTOR3( 1.0f , -0.5f, 0.5f),D3DXCOLOR(0.1f,0.0f,0.0f,0.0f)},
 	};
 
 	int indices[]={0,1,2,0,3,2};
@@ -117,6 +119,9 @@ bool CGameApplication::initGame()
 	D3D10_INPUT_ELEMENT_DESC layout[] = 
 	{
 		{"POSITION",0, DXGI_FORMAT_R32G32B32_FLOAT,0,0,
+		D3D10_INPUT_PER_VERTEX_DATA,0},
+
+		{"COLOR",0, DXGI_FORMAT_R32G32B32A32_FLOAT,0,12,
 		D3D10_INPUT_PER_VERTEX_DATA,0},
 	};
 

@@ -5,11 +5,14 @@ float4x4 matProjection:PROJECTION;
 struct VS_INPUT
 {
 	float4 pos:POSITION;
+	float4 colour:COLOR;
+	
 };
 
 struct PS_INPUT
 {
 	float4 pos:SV_POSITION;
+	float4 colour:COLOR;
 };
 
 PS_INPUT VS(VS_INPUT input)
@@ -20,26 +23,28 @@ PS_INPUT VS(VS_INPUT input)
 	float4x4 matWorldViewProjection=mul(matWorld,matViewProjection);
 	
 	output.pos=mul(input.pos,matWorldViewProjection);
+	output.colour = input.colour;
 	return output;
 }
 
 float4 PS(PS_INPUT input):SV_TARGET
 {
-	return float4(1.0f,1.0f,1.0f,1.0f);
+	//return float4(1.0f,1.0f,1.0f,1.0f);
+	return input.colour;
 }
 
 RasterizerState DisableCulling
 {
-	CullMode = NONE;
+    CullMode = NONE;
 };
 
 technique10 Render
 {
 	pass P0
 	{
-		SetVertexShader(CompileShader(vs_4_0,VS()));
-		SetGeometryShader(NULL);
-		SetPixelShader( CompileShader(ps_4_0, PS()));
-		SetRasterizerState(DisableCulling);
+		SetVertexShader(CompileShader(vs_4_0, VS() ) );
+		SetGeometryShader( NULL );
+		SetPixelShader( CompileShader( ps_4_0,  PS() ) );
+		SetRasterizerState(DisableCulling); 
 	}
 }
