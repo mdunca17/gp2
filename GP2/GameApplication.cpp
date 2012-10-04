@@ -26,6 +26,9 @@ CGameApplication::~CGameApplication(void)
 	if(m_pVertexLayout)
 		m_pVertexLayout->Release();
 
+	if(m_pIndexBuffer)
+		m_pIndexBuffer->Release();
+
 	if(m_pEffect)
 		m_pEffect->Release();
 
@@ -86,19 +89,28 @@ bool CGameApplication::initGame()
 
 	D3D10_BUFFER_DESC bd;
 	bd.Usage = D3D10_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof (Vertex) * 3;
+	bd.ByteWidth = sizeof (Vertex) * 4;
 	bd.BindFlags = D3D10_BIND_VERTEX_BUFFER;
 	bd.CPUAccessFlags = 0;
 	bd.MiscFlags = 0;
 
-
+	//index buffer
+	D3D10_BUFFER_DESC IndexBufferDesc;
+	IndexBufferDesc.Usage = D3D10_USAGE_DEFAULT;
+	IndexBufferDesc.ByteWidth = sizeof (int) * 6;
+	IndexBufferDesc.BindFlags = D3D10_BIND_INDEX_BUFFER;
+	IndexBufferDesc.CPUAccessFlags = 0;
+	IndexBufferDesc.MiscFlags = 0;
 	
 	Vertex vertices[] =
 	{
+		D3DXVECTOR3(0.0f, 0.0f, 0.5f),
 		D3DXVECTOR3(0.0f, 0.5f, 0.5f),
-		D3DXVECTOR3(0.5f, -0.5f, 0.5f),
-		D3DXVECTOR3(-0.5f, -0.5f, 0.5f),
+		D3DXVECTOR3(0.5f, 0.5f, 0.5f),
+		D3DXVECTOR3( 0.5f , 0.0f, 0.5f),
 	};
+
+	int indices[]={0,1,2,0,3,2};
 
 	
 
@@ -129,16 +141,20 @@ bool CGameApplication::initGame()
 	if (FAILED(m_pD3D10Device->CreateBuffer(&bd, &InitData, &m_pVertexBuffer)))
 		return false;
 
-	D3D10_BUFFER_DESC indexBufferDesc;
-	indexBufferDesc.Usage = D3D10_USAGE_DEFAULT;
-	indexBufferDesc.ByteWidth = sizeof (int) * 3;
-	indexBufferDesc.BindFlags = D3D10_BIND_INDEX_BUFFER;
-	indexBufferDesc.CPUAccessFlags = 0;
-	indexBufferDesc.MiscFlags = 0;
+	//SUBRESOURCE
+	D3D10_SUBRESOURCE_DATA IndexBufferInitialData ;
+	IndexBufferInitialData.pSysMem = indices;
+	if (FAILED(m_pD3D10Device->CreateBuffer(&IndexBufferDesc, &IndexBufferInitialData, &m_pIndexBuffer)))
+		return false;
+
+	
 
 	UINT stride = sizeof (Vertex);
 	UINT offset = 0;
 	m_pD3D10Device->IASetVertexBuffers(0,1, &m_pVertexBuffer, &stride, &offset);
+	
+	//binding the buffer to pipeline 
+	m_pD3D10Device->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT,0);
 
 	D3DXVECTOR3 cameraPos(0.0f,0.0f,-10.0f);
 	D3DXVECTOR3 cameraLook(0.0f,0.0f,1.0f);
@@ -197,7 +213,7 @@ void CGameApplication::render()
 	for (UINT p = 0; p< techDesc.Passes; ++p)
 	{
 		m_pTechnique->GetPassByIndex(p)->Apply(0);
-		m_pD3D10Device->Draw(3,0);
+		m_pD3D10Device->DrawIndexed(6,0,0);
 	}
 	m_pSwapChain->Present(0,0);
 }

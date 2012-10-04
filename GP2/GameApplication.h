@@ -29,6 +29,7 @@ private:
 	ID3D10Buffer*	m_pVertexBuffer;
 	ID3D10InputLayout*	m_pVertexLayout;
 
+	//index buffer
 	ID3D10Buffer*		m_pIndexBuffer;
 
 	ID3D10Effect*	m_pEffect;
