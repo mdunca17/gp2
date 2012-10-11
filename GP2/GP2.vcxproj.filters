@@ -49,5 +49,14 @@
     <None Include="Transform.fx">
       <Filter>Effects</Filter>
     </None>
+    <None Include="Texture.fx">
+      <Filter>Effects</Filter>
+    </None>
+    <None Include="face.PNG">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="rockwall.jpg">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

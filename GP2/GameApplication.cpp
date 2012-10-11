@@ -3,7 +3,7 @@ struct Vertex
 {
 	D3DXVECTOR3 Pos;
 	D3DXCOLOR colour;
-
+	D3DXVECTOR2 texCoords;
 };
 
 CGameApplication::CGameApplication(void)
@@ -15,6 +15,7 @@ CGameApplication::CGameApplication(void)
 	m_pVertexBuffer=NULL;
 	m_pDepthStencilView=NULL;
 	m_pDepthStencilTexture=NULL;
+	m_pDiffuseTexture=NULL;
 }
 
 CGameApplication::~CGameApplication(void)
@@ -33,6 +34,9 @@ CGameApplication::~CGameApplication(void)
 
 	if(m_pEffect)
 		m_pEffect->Release();
+
+	if (m_pDiffuseTexture)
+		m_pDiffuseTexture-> Release();
 
 	if(m_pRenderTargetView)
 		m_pRenderTargetView->Release();
@@ -77,15 +81,17 @@ bool CGameApplication::initGame()
 	dwShaderFlags|=D3D10_SHADER_DEBUG;
 #endif
 	ID3D10Blob *pErrors=NULL;
-	if (FAILED(D3DX10CreateEffectFromFile(TEXT("Transform.fx"),
+	if (FAILED(D3DX10CreateEffectFromFile(TEXT("Texture.fx"),
 		NULL, NULL, "fx_4_0",dwShaderFlags, 0,
 		m_pD3D10Device, NULL, NULL,&m_pEffect, &pErrors, NULL)))
 	{
 		MessageBoxA(NULL,(char*)pErrors->GetBufferPointer(),
-			"ERROR",
-			MB_OK);
+			"ERROR", MB_OK);
 		return false;
 	}
+
+		m_pDiffuseTextureVariable=m_pEffect->
+		GetVariableByName("diffuseTexture")->AsShaderResource();
 
 	m_pTechnique=m_pEffect->GetTechniqueByName("Render");
 
@@ -95,6 +101,7 @@ bool CGameApplication::initGame()
 	bd.BindFlags = D3D10_BIND_VERTEX_BUFFER;
 	bd.CPUAccessFlags = 0;
 	bd.MiscFlags = 0;
+	
 
 	//index buffer
 	D3D10_BUFFER_DESC IndexBufferDesc;
@@ -106,10 +113,14 @@ bool CGameApplication::initGame()
 	
 	Vertex vertices[] =
 	{
-		{D3DXVECTOR3(-0.5f, -0.5f, 0.5f),D3DXCOLOR(1.0f,0.0f,0.0f,0.0f)},
-		{D3DXVECTOR3(-0.5f, 1.0f, 0.5f),D3DXCOLOR(0.0f,0.0f,1.0f,0.0f)},
-		{D3DXVECTOR3(1.0f, 1.0f, 0.5f),D3DXCOLOR(0.0f,1.0f,0.0f,0.0f)},
-		{D3DXVECTOR3( 1.0f , -0.5f, 0.5f),D3DXCOLOR(0.1f,0.0f,0.0f,0.0f)},
+		{D3DXVECTOR3(-0.5f, -0.5f, 0.5f),
+		         D3DXCOLOR(1.0f,0.0f,0.0f,0.0f),D3DXVECTOR2(0.0f,0.0f)}, // 0 
+		{D3DXVECTOR3(-0.5f, 1.0f, 0.5f),
+		         D3DXCOLOR(0.0f,0.0f,1.0f,0.0f),D3DXVECTOR2(1.0f,1.0f)}, // 1
+		{D3DXVECTOR3(1.0f, 1.0f, 0.5f),
+		         D3DXCOLOR(0.0f,1.0f,0.0f,0.0f),D3DXVECTOR2(0.0f,1.0f)}, // 2 
+		{D3DXVECTOR3( 1.0f , -0.5f, 0.5f),
+		         D3DXCOLOR(0.1f,0.0f,0.0f,0.0f),D3DXVECTOR2(1.0f,0.0f)}, // 3
 	};
 
 	int indices[]={0,1,2,0,3,2};
@@ -122,6 +133,9 @@ bool CGameApplication::initGame()
 		D3D10_INPUT_PER_VERTEX_DATA,0},
 
 		{"COLOR",0, DXGI_FORMAT_R32G32B32A32_FLOAT,0,12,
+		D3D10_INPUT_PER_VERTEX_DATA,0},
+
+		{"TEXCOORD",0, DXGI_FORMAT_R32G32_FLOAT,0,28,
 		D3D10_INPUT_PER_VERTEX_DATA,0},
 	};
 
@@ -187,6 +201,14 @@ bool CGameApplication::initGame()
 	m_pWorldMatrixVariable=
 		m_pEffect->GetVariableByName("matWorld")->AsMatrix();
 
+	if (FAILED(D3DX10CreateShaderResourceViewFromFile(m_pD3D10Device,
+			TEXT("rockwall.jpg"), NULL, NULL, &m_pDiffuseTexture, NULL)))
+	{
+		MessageBox(NULL,TEXT("Can't load Texture"),TEXT("error"),MB_OK);
+		return false;
+	}
+
+
 
 	return true;
 }
@@ -212,6 +234,8 @@ void CGameApplication::render()
 	m_pViewMatrixVariable->SetMatrix((float*)m_matView);
 
 	m_pWorldMatrixVariable->SetMatrix((float*)m_matWorld);
+
+	m_pDiffuseTextureVariable->SetResource(m_pDiffuseTexture);
 
 	D3D10_TECHNIQUE_DESC techDesc;
 	m_pTechnique->GetDesc(&techDesc);

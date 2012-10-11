@@ -38,6 +38,9 @@ private:
 	ID3D10EffectShaderResourceVariable*	m_pDiffuseTextureVariable;
 	ID3D10ShaderResourceView*			m_pTextureShaderResource;
 
+	ID3D10ShaderResourceView*	m_pDiffuseTexture;
+
+
 	D3DXMATRIX m_matWorld;
 	D3DXMATRIX m_matScale;
 	D3DXMATRIX m_matRotation;
