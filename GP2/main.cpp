@@ -1,9 +1,10 @@
 //Are we on the windows platform?
-//#ifdef WIN32// anything included between ifdef and endif will be included if win32 is 
+#ifdef WIN32
 //if so include the header for windows applications
 #include <Windows.h>
-#include "GameApplication.h"
+#endif
 
+#include "GameApplication.h"
 
 //Check to see if we are on windows
 #ifdef WIN32
@@ -16,11 +17,10 @@ int WINAPI WinMain(HINSTANCE hInstance,
 int main(int argc, char **argv)
 #endif
 {
-	CGameApplication*pApp=new CGameApplication();
-
-	if(!pApp->init())
+	CGameApplication *pApp=new CGameApplication();
+	if (!pApp->init())
 	{
-		if(pApp)
+		if (pApp)
 		{
 			delete pApp;
 			pApp=NULL;
@@ -28,17 +28,11 @@ int main(int argc, char **argv)
 		}
 	}
 	pApp->run();
-	if(pApp)
+	if (pApp)
 	{
 		delete pApp;
 		pApp=NULL;
 	}
-
 	return 0;
 }
-
-
-
-
-
 

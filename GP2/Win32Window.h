@@ -46,4 +46,3 @@ private:
 	RAWINPUTDEVICE m_Rid[1];
 
 };
-
