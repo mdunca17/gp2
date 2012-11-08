@@ -8,6 +8,7 @@ CMaterialComponent::CMaterialComponent()
 	m_pEffect=NULL;
 	m_pVertexLayout=NULL;
 	m_pDiffuseTexture=NULL;
+	m_pSpecularTexture=NULL;
 	m_EffectName="";
 	m_TechniqueName="Render";
 	ZeroMemory(&m_TechniqueDesc,sizeof(D3D10_TECHNIQUE_DESC));
@@ -116,6 +117,16 @@ void CMaterialComponent::loadDiffuseTexture(const string& filename)
 		OutputDebugStringA("Can't load Texture");
 	}
 }
+//wtf is this shit
+//are you seeing this
+void CMaterialComponent::loadSpecularTexture(const string& filename)
+{
+	if (FAILED(D3DX10CreateShaderResourceViewFromFileA(m_pD3D10Device,
+		filename.c_str(), NULL, NULL,&m_pSpecularTexture , NULL)))
+	{
+		OutputDebugStringA("Can't load Texture");
+	}
+}
 
 //init
 void CMaterialComponent::init()
@@ -133,6 +144,7 @@ void CMaterialComponent::init()
 	//Grab the technique
 	m_pTechnique=m_pEffect->GetTechniqueByName(m_TechniqueName.c_str());
 	m_pTechnique->GetDesc(&m_TechniqueDesc);
+	
 	//create vertex layout
 	createVertexLayout();
 
@@ -142,6 +154,8 @@ void CMaterialComponent::init()
 	m_pProjectionMatrixVariable=m_pEffect->GetVariableBySemantic("PROJECTION")->AsMatrix();
 	m_pDiffuseTextureVariable=m_pEffect->GetVariableByName("diffuseMap")->AsShaderResource();
 
+	m_pUseDiffuseTextureVariable=m_pEffect->GetVariableByName("useDiffuseTexture")->AsScalar();
+	m_pUseSpecularTextureVariable=m_pEffect->GetVariableByName("useSpecularTexture")->AsScalar();
 	//lights
 	m_pAmbientLightColourVariable=m_pEffect->GetVariableByName("ambientLightColour")->AsVector();
 	m_pDiffuseLightColourVariable=m_pEffect->GetVariableByName("diffuseLightColour")->AsVector();
